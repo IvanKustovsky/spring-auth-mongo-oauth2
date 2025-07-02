@@ -1,5 +1,7 @@
 package com.ivan.healthtracker.service.impl;
 
+import com.ivan.healthtracker.exception.ResourceNotFoundException;
+import com.ivan.healthtracker.exception.UserAlreadyExistsException;
 import com.ivan.healthtracker.model.User;
 import com.ivan.healthtracker.dto.RegisterRequest;
 import com.ivan.healthtracker.dto.LoginRequest;
@@ -12,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.util.Collections;
 
 @Service
@@ -26,33 +28,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already in use");
+        if (userRepository.existsByEmail(request.email())) {
+            throw new UserAlreadyExistsException("Email already in use");
         }
+
         User user = User.builder()
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
                 .provider(User.AuthProvider.LOCAL)
                 .roles(Collections.singleton("USER"))
                 .build();
+
         userRepository.save(user);
+
         String token = jwtUtil.generateToken(user);
+
         return new AuthResponse(token);
     }
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        var authToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
-        var authentication = authenticationManager.authenticate(authToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        var authToken = new UsernamePasswordAuthenticationToken(request.email(), request.password());
+        authenticationManager.authenticate(authToken);
+
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", request.email()));
+
         String jwtToken = jwtUtil.generateToken(user);
         return new AuthResponse(jwtToken);
-    }
-
-    @Override
-    public void logout() {
-        SecurityContextHolder.clearContext();
     }
 } 

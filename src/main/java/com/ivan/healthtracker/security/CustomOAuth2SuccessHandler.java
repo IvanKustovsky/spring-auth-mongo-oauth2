@@ -1,5 +1,6 @@
 package com.ivan.healthtracker.security;
 
+import com.ivan.healthtracker.config.FrontendProperties;
 import com.ivan.healthtracker.service.OAuth2UserService;
 import com.ivan.healthtracker.dto.AuthResponse;
 import jakarta.servlet.ServletException;
@@ -10,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 
 @Component
@@ -18,7 +18,7 @@ import java.io.IOException;
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final OAuth2UserService oAuth2UserService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final FrontendProperties frontendProperties;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -27,7 +27,8 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
         AuthResponse authResponse = oAuth2UserService.handleOAuth2Login(email, name);
-        response.setContentType("application/json");
-        response.getWriter().write(objectMapper.writeValueAsString(authResponse));
+
+        String redirectUrl = frontendProperties.getRedirectUri() + "?token=" + authResponse.token();
+        response.sendRedirect(redirectUrl);
     }
-} 
+}

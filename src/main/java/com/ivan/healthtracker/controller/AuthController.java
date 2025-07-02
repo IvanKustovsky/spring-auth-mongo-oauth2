@@ -7,11 +7,11 @@ import com.ivan.healthtracker.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "${app.frontend.origin}", allowCredentials = "true")
 public class AuthController {
 
     private final UserService userService;
@@ -24,16 +24,5 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(userService.login(request));
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
-        userService.logout();
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/")
-    public RedirectView redirectToSwagger() {
-        return new RedirectView("/swagger-ui/index.html");
     }
 } 

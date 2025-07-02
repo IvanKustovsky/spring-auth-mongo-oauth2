@@ -19,15 +19,15 @@ public class OAuth2UserServiceImpl implements OAuth2UserService {
 
     @Override
     public AuthResponse handleOAuth2Login(String email, String name) {
-        User user = userRepository.findByEmail(email).orElse(null);
-        if (user == null) {
-            user = User.builder()
-                    .email(email)
-                    .provider(User.AuthProvider.GOOGLE)
-                    .roles(Collections.singleton("USER"))
-                    .build();
-            userRepository.save(user);
-        }
+        User user = userRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    User newUser = User.builder()
+                            .email(email)
+                            .provider(User.AuthProvider.GOOGLE)
+                            .roles(Collections.singleton("USER"))
+                            .build();
+                    return userRepository.save(newUser);
+                });
         String token = jwtUtil.generateToken(user);
         return new AuthResponse(token);
     }
