@@ -1,15 +1,15 @@
 package com.ivan.healthtracker.service.impl;
 
-import com.ivan.healthtracker.exception.ResourceNotFoundException;
 import com.ivan.healthtracker.exception.UserAlreadyExistsException;
 import com.ivan.healthtracker.model.User;
 import com.ivan.healthtracker.dto.RegisterRequest;
 import com.ivan.healthtracker.dto.LoginRequest;
 import com.ivan.healthtracker.dto.AuthResponse;
-import com.ivan.healthtracker.repositiry.UserRepository;
+import com.ivan.healthtracker.repository.UserRepository;
 import com.ivan.healthtracker.utils.JwtUtil;
 import com.ivan.healthtracker.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.email())) {
+        if (userRepository.findByEmail(request.email()).isPresent()) {
             throw new UserAlreadyExistsException("Email already in use");
         }
 
@@ -49,10 +49,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public AuthResponse login(LoginRequest request) {
         var authToken = new UsernamePasswordAuthenticationToken(request.email(), request.password());
-        authenticationManager.authenticate(authToken);
+        Authentication authentication = authenticationManager.authenticate(authToken);
 
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "email", request.email()));
+        User user = (User) authentication.getPrincipal();
 
         String jwtToken = jwtUtil.generateToken(user);
         return new AuthResponse(jwtToken);

@@ -2,7 +2,7 @@ package com.ivan.healthtracker.service.impl;
 
 import com.ivan.healthtracker.dto.AuthResponse;
 import com.ivan.healthtracker.model.User;
-import com.ivan.healthtracker.repositiry.UserRepository;
+import com.ivan.healthtracker.repository.UserRepository;
 import com.ivan.healthtracker.service.OAuth2UserService;
 import com.ivan.healthtracker.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +23,13 @@ public class OAuth2UserServiceImpl implements OAuth2UserService {
                 .orElseGet(() -> {
                     User newUser = User.builder()
                             .email(email)
+                            .name(name)
                             .provider(User.AuthProvider.GOOGLE)
                             .roles(Collections.singleton("USER"))
                             .build();
                     return userRepository.save(newUser);
                 });
+
         String token = jwtUtil.generateToken(user);
         return new AuthResponse(token);
     }

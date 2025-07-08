@@ -1,4 +1,4 @@
-package com.ivan.healthtracker.repositiry;
+package com.ivan.healthtracker.repository;
 
 
 import com.ivan.healthtracker.model.User;
@@ -9,5 +9,4 @@ import java.util.Optional;
 public interface UserRepository extends MongoRepository<User, String> {
 
     Optional<User> findByEmail(String email);
-    boolean existsByEmail(String email);
 } 

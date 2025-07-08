@@ -1,0 +1,8 @@
+jwt:
+  secret: VGhpcyBpcyBhIHZlcnkgc2VjdXJlIHNlY3JldCBmb3IgdGVzdHM=
+  expiration-ms: 3600000
+
+app:
+  frontend:
+    redirect-uri: ${FRONTEND_REDIRECT_URI:http://localhost:3000/oauth2/redirect}
+    origin: ${FRONTEND_ORIGIN:http://localhost:3000}

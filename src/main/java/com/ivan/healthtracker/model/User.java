@@ -27,6 +27,8 @@ public class User implements UserDetails {
 
     private String password;
 
+    private String name;
+
     private AuthProvider provider;
 
     private Set<String> roles;

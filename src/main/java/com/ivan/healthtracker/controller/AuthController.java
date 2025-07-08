@@ -4,6 +4,7 @@ import com.ivan.healthtracker.dto.RegisterRequest;
 import com.ivan.healthtracker.dto.LoginRequest;
 import com.ivan.healthtracker.dto.AuthResponse;
 import com.ivan.healthtracker.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(userService.register(request));
     }
 

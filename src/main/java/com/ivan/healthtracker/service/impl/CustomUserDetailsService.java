@@ -1,6 +1,6 @@
 package com.ivan.healthtracker.service.impl;
 
-import com.ivan.healthtracker.repositiry.UserRepository;
+import com.ivan.healthtracker.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
