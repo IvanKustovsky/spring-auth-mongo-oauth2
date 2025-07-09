@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,12 +57,6 @@ class OAuth2UserServiceImplTest {
         // Given
         var email = "newuser@example.com";
         var name = "New User";
-        var newUser = User.builder()
-                .email(email)
-                .name(name)
-                .provider(User.AuthProvider.GOOGLE)
-                .roles(Collections.singleton("USER"))
-                .build();
         var expectedToken = "jwt_token_new_user";
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());

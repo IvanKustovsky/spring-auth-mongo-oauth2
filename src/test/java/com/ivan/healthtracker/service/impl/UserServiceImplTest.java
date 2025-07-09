@@ -112,7 +112,7 @@ class UserServiceImplTest {
     @Test
     void login_shouldThrow_whenAuthenticationFails() {
         // Given
-        var request = new LoginRequest("user@email.com", "wrongpass");
+        var request = new LoginRequest("user@email.com", "wrongPass");
 
         doThrow(new BadCredentialsException("Bad credentials"))
                 .when(authenticationManager).authenticate(any());
